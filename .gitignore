@@ -27,5 +27,5 @@ package-lock.json
 
 # React
 build
-*.env
+#*.env
 
