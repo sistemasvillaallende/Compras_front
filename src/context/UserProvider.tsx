@@ -4,46 +4,25 @@ import axios from "axios"
 import menuIcon from "../assets/IconoMenu.svg"
 import { capitalizeFirstLetter } from "../utils/helper"
 import { setSecureItem } from "../modules/secureStorage"
+import { User } from "../interfaces/User"
 
-type UserType = {
-  nombre: string
-  apellido: string
-  email: string
-  userName: string
-  cuit: string | null
-  nombre_oficina: string
-  cod_oficina: number
-  cod_usuario: string
-  administrador: boolean
-  img?: string
-  token: string
-} | null
-
-type MenuItem = {
-  texto: string
-  url: string
-  icono: string
-  submenu: any
-}
 
 type UserContextType = {
-  user: UserType
+  user: User | undefined
   error: string | null
-  menuItems: MenuItem[]
   menuIcon: string
-  setUser: (user: UserType) => void
+  setUser: (user: User) => void
   handleLogin: (username: string, password: string) => void
   handleLogout: () => void
 }
 
 const userContext = createContext<UserContextType>({
-  user: null,
+  user: undefined,
   error: null,
-  menuItems: [],
   menuIcon: "",
-  setUser: () => {},
-  handleLogin: () => {},
-  handleLogout: () => {},
+  setUser: () => { },
+  handleLogin: () => { },
+  handleLogout: () => { },
 })
 
 export function useUserContext() {
@@ -51,26 +30,12 @@ export function useUserContext() {
 }
 
 export function UserProvider({ children }: any) {
-  const [user, setUser] = useState<UserType>(null)
+  const [user, setUser] = useState<User | undefined>(undefined)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const menuItems: MenuItem[] = [
-    { texto: "Inicio", url: "/", icono: "ArrowRightCircle" },
-    { texto: "Editar", url: "/editar", icono: "Edit" },
-    { texto: "Inicia Cta. Corriente", url: "/iniciar", icono: "FilePlus" },
-    {
-      texto: "Cta. Corriente",
-      url: "/iniciar",
-      icono: "DollarSign",
-      submenu: [{ texto: "Cta. Corriente", url: "/iniciar", icono: "DollarSign" }],
-    },
-    { texto: "Cancelar Cta.Cte.", url: "/editar", icono: "ThumbsUp" },
-    { texto: "Eliminar Cancelación", url: "/editar", icono: "Slash" },
-    { texto: "Cedulones", url: "/editar", icono: "FileText" },
-    { texto: "ReLiquida", url: "/editar", icono: "Rewind" },
-  ]
+
 
   const handleLogin = async (username: any, password: any) => {
     setError(null)
@@ -112,7 +77,7 @@ export function UserProvider({ children }: any) {
 
   const handleLogout = () => {
     localStorage.removeItem("usuarioLogeado")
-    setUser(null)
+    setUser(undefined)
     navigate("/")
   }
 
@@ -125,9 +90,9 @@ export function UserProvider({ children }: any) {
 
   return (
     <userContext.Provider
-      value={{ user, error, menuItems, menuIcon, setUser, handleLogin, handleLogout }}
+      value={{ user, error, menuIcon, setUser, handleLogin, handleLogout }}
     >
       {children}
-    </userContext.Provider>
+    </userContext.Provider >
   )
 }

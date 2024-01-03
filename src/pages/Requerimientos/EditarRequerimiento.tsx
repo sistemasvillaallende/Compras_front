@@ -12,6 +12,8 @@ import Button from "../../base-components/Button";
 import Lucide from "../../base-components/Lucide";
 import Swal from "sweetalert2";
 import { convertirFecha } from "../../utils/helper";
+import insumos from "../../../data/insumos.json";
+import axios from "axios";
 
 function EditarRequerimiento() {
   const { id } = useParams()
@@ -19,6 +21,7 @@ function EditarRequerimiento() {
   const [requerimiento, setRequerimiento] = useState<Requerimiento | undefined>()
   const [listaDeRequerimientos, setListaDeRequerimientos] = useState<Item[]>([])
   const [total, setTotal] = useState(0)
+  const [listaDeInsumos, setListaDeInsumos] = useState<any[]>([])
 
 
   useEffect(() => {
@@ -35,6 +38,7 @@ function EditarRequerimiento() {
 
   useEffect(() => {
     modificarTotal();
+    obtenerInsumos();
   }, [listaDeRequerimientos]);
 
   const handleDeleteItem = (id: number) => {
@@ -42,22 +46,39 @@ function EditarRequerimiento() {
     setListaDeRequerimientos(newList)
   }
 
-  const handleGuardar = () => {
-    Swal.fire({
-      title: `¿Deseas guardar los cambios?`,
-      text: "No podrás revertir esta acción",
-      icon: 'error',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#27a3cf',
-      cancelButtonColor: '#d33',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        history.back()
+  const handleGuardar = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_URL_API}/Requerimiento/nuevoRequerimiento/`,
+        {
+          id: requerimiento?.id,
+          estado: "Pendiente", // Modifica este valor según la lógica de tu aplicación
+          nota: "Nota de ejemplo", // Modifica este valor según la lógica de tu aplicación
+          items: listaDeRequerimientos,
+        }
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Guardado exitoso",
+          icon: "success",
+        }).then(() => {
+          history.back();
+        });
+      } else {
+        Swal.fire({
+          title: "Error al guardar",
+          icon: "error",
+        });
       }
-    })
-  }
+    } catch (error) {
+      console.error("Error al guardar el requerimiento:", error);
+      Swal.fire({
+        title: "Error al guardar",
+        icon: "error",
+      });
+    }
+  };
 
   const handleAgregarRequerimiento = () => {
     setListaDeRequerimientos([...listaDeRequerimientos, {
@@ -86,108 +107,10 @@ function EditarRequerimiento() {
     modificarTotal()
   };
 
-  const listaDeInsumos = [
-    {
-      id: 1,
-      nombre: "ladrillo",
-      precio: 100
-    },
-    {
-      id: 2,
-      nombre: "cemento",
-      precio: 100
-    },
-    {
-      id: 3,
-      nombre: "papel",
-      precio: 50
-    },
-    {
-      id: 4,
-      nombre: "pluma",
-      precio: 120
-    },
-    {
-      id: 5,
-      nombre: "cartón",
-      precio: 200
-    },
-    {
-      id: 6,
-      nombre: "cinta adhesiva",
-      precio: 150
-    },
-    {
-      id: 7,
-      nombre: "folletos",
-      precio: 300
-    },
-    {
-      id: 8,
-      nombre: "tarjetas de visita",
-      precio: 250
-    },
-    {
-      id: 9,
-      nombre: "catálogos",
-      precio: 150
-    },
-    {
-      id: 10,
-      nombre: "bolígrafos",
-      precio: 200
-    },
-    {
-      id: 11,
-      nombre: "laptops",
-      precio: 500
-    },
-    {
-      id: 12,
-      nombre: "monitores",
-      precio: 300
-    },
-    {
-      id: 13,
-      nombre: "estantes",
-      precio: 100
-    },
-    {
-      id: 14,
-      nombre: "cajas de almacenamiento",
-      precio: 50
-    },
-    {
-      id: 15,
-      nombre: "computadoras de alto rendimiento",
-      precio: 2000
-    },
-    {
-      id: 16,
-      nombre: "sillas ergonómicas",
-      precio: 1500
-    },
-    {
-      id: 17,
-      nombre: "muestras de prueba",
-      precio: 10
-    },
-    {
-      id: 18,
-      nombre: "instrumentos de medición",
-      precio: 5
-    },
-    {
-      id: 19,
-      nombre: "madera",
-      precio: 50
-    },
-    {
-      id: 20,
-      nombre: "metal",
-      precio: 30
-    }
-  ];
+  const obtenerInsumos = async () => {
+    //obtener los insumos del archivo json
+    setListaDeInsumos(insumos)
+  }
 
   return (
     <div className="mb-10">

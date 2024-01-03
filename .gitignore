@@ -25,5 +25,7 @@ package-lock.json
 *.sln
 *.sw?
 
-#React Typescript
-.env
+# React
+build
+*.env
+

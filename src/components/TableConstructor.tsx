@@ -30,9 +30,6 @@ const TableConstructor = ({ data, handleClick }: TableProps) => {
             Fecha
           </Table.Td>
           <Table.Td>
-            Usuario
-          </Table.Td>
-          <Table.Td>
             Área
           </Table.Td>
           <Table.Td>
@@ -52,9 +49,6 @@ const TableConstructor = ({ data, handleClick }: TableProps) => {
               </Table.Td>
               <Table.Td>
                 {convertirFecha(row.fecha)}
-              </Table.Td>
-              <Table.Td>
-                {row.usuario}
               </Table.Td>
               <Table.Td>
                 {row.area}
