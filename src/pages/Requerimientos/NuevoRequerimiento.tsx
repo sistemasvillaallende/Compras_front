@@ -67,7 +67,6 @@ function NuevoRequerimiento() {
 
 
   const handleAgregarRequerimiento = (e: any) => {
-    console.log(e.target.insumo.value)
     const insumoSeleccionado = listaDeInsumos.find((insumo: any) => insumo.id === e.target.insumo.value)
 
     if (insumoSeleccionado) { // Verificar si se encontró un insumo
