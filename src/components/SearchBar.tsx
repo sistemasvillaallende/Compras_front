@@ -1,16 +1,24 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Button from "../base-components/Button"
 import { FormInput, FormLabel, FormSelect } from "../base-components/Form"
 import Swal from "sweetalert2"
-import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
-const SearchBar = ({
-  handleNuevaTasa,
-}: {
-  handleNuevaTasa: React.MouseEventHandler<HTMLButtonElement>
-}) => {
-  const [error, setError] = useState<string | null>(null)
-  const [paginaActual, setPaginaActual] = useState(1)
+const SearchBar = ({ setPalabra, setParametro }: { setPalabra: (value: string) => void, setParametro: (value: string) => void }) => {
+
+  const buscarPor = (e: any) => {
+    e.preventDefault()
+    setPalabra(e.target.parametro.value)
+    setParametro(e.target.searchFor.value)
+  }
+
+  const navegar = useNavigate()
+
+  const limpiar = () => {
+    console.log("limpiar")
+    setPalabra("")
+    setParametro("")
+  }
 
   return (
     <div className="mb-5">
@@ -18,28 +26,18 @@ const SearchBar = ({
         <form
           id="formBuscar"
           className="ml-1 flex flex-col justify-start items-center gap-2"
+          onSubmit={buscarPor}
         >
           <div className="flex">
             <div className="relative hidden sm:block">
               <FormLabel htmlFor="vertical-form-1">Buscar por</FormLabel>
               <FormSelect
                 className="ml-3 sm:mr-2 w-100"
-                name="buscarPor"
-                id="buscarPor"
+                id="searchFor"
               >
-                <option value="titular">Número</option>
-                <option value="cuil">Secretaría</option>
-                <option value="denominacion">Oficina</option>
-              </FormSelect>
-              <FormLabel htmlFor="vertical-form-1">Estado</FormLabel>
-              <FormSelect
-                className="ml-3 sm:mr-2 w-100"
-                name="activos"
-                id="activos"
-              >
-                <option value="1">pendiente</option>
-                <option value="0">aprobado</option>
-                <option value="2">rechazado</option>
+                <option value="">seleccionar</option>
+                <option value="estado">Estado</option>
+                <option value="area">Área</option>
               </FormSelect>
               <FormInput
                 type="text"
@@ -53,7 +51,7 @@ const SearchBar = ({
               Buscar
             </Button>
 
-            <Button variant="soft-primary" className="h-10 mx-3">
+            <Button variant="soft-primary" className="h-10 mx-3" onClick={limpiar}>
               Limpiar
             </Button>
           </div>

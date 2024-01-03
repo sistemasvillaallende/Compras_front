@@ -2,7 +2,8 @@ import { useParams, useNavigate } from "react-router-dom"
 import TableConstructor from "../../components/TableConstructor"
 import SearchBar from "../../components/SearchBar"
 import { useComprasContext } from "../../context/ComprasProviders"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 
 const fields = [
   { name: "#", frontName: "id" },
@@ -14,7 +15,16 @@ const fields = [
 
 const Requerimientos = () => {
   const navigate = useNavigate()
+  const [palabra, setPalabra] = useState("")
+  const [parametro, setParametro] = useState("")
+
   const { requerimientos } = useComprasContext()
+  const [requerimientosFiltrados, setRequerimientosFiltrados] = useState<any[]>([])
+
+  useEffect(() => {
+    setRequerimientosFiltrados(requerimientos || [])
+  }, [requerimientos])
+
   const handleNuevaTasa = () => {
     navigate(`/nuevaTasa`)
   }
@@ -23,22 +33,34 @@ const Requerimientos = () => {
     navigate(`/ver/${requerimiento.id}`)
   }
 
+  const filtrarRequerimientos = (palabra: string, parametro: string) => {
+    if (requerimientos) {
+      setRequerimientosFiltrados(requerimientos.filter((requerimiento: any) => {
+        return requerimiento[parametro].toLowerCase().includes(palabra.toLowerCase())
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (palabra === "" && parametro === "" && requerimientos) {
+      setRequerimientosFiltrados(requerimientos);
+    }
+    console.log(palabra, parametro)
+  }, [palabra, parametro]);
+
   return (
     <>
       <div className="intro-y flex flex-col h-full">
-        <SearchBar handleNuevaTasa={handleNuevaTasa} />
+        <SearchBar setPalabra={setPalabra} setParametro={setParametro} />
         <div className="conScroll h-2/5">
           {requerimientos && requerimientos.length > 0 && (
             <TableConstructor
               fields={fields}
-              data={requerimientos}
+              data={requerimientosFiltrados}
               handleClick={handleClick}
             />
           )}
         </div>
-      </div>
-      <div className="absolute right-0 -bottom-16">
-
       </div>
     </>
   )

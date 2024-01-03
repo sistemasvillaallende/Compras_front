@@ -26,6 +26,11 @@ function Main() {
       title: "Inicio",
     },
     {
+      icon: "Eye",
+      pathname: `/ver/${id ?? ""}`,
+      title: "Ver",
+    },
+    {
       icon: "Edit",
       pathname: `/editar/${id ?? ""}`,
       title: "Editar",

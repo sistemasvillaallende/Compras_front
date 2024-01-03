@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 import { convertirFecha } from "../../utils/helper";
 import insumos from "../../../data/insumos.json";
 import axios from "axios";
+import Select from 'react-select';
 
 function EditarRequerimiento() {
   const { id } = useParams()
@@ -22,19 +23,18 @@ function EditarRequerimiento() {
   const [listaDeRequerimientos, setListaDeRequerimientos] = useState<Item[]>([])
   const [total, setTotal] = useState(0)
   const [listaDeInsumos, setListaDeInsumos] = useState<any[]>([])
-
+  const opcionesInsumos = listaDeInsumos.map(insumo => ({ value: insumo.id, label: insumo.nombre }));
 
   useEffect(() => {
     if (requerimientos) {
       const requerimiento = requerimientos.find((requerimiento: Requerimiento) => requerimiento.id === parseInt(id as string))
       setRequerimiento(requerimiento)
-      console.log("REQUERIMIENTO", requerimiento)
-    }
-    if (requerimiento?.items) {
-      setListaDeRequerimientos(requerimiento.items)
+      if (requerimiento?.items) {
+        setListaDeRequerimientos(requerimiento.items)
+      }
     }
     modificarTotal()
-  }, [requerimiento])
+  }, [])
 
   useEffect(() => {
     modificarTotal();
@@ -46,48 +46,45 @@ function EditarRequerimiento() {
     setListaDeRequerimientos(newList)
   }
 
-  const handleGuardar = async () => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_URL_API_COMPRAS}Requerimiento/nuevoRequerimiento/`,
-        {
-          id: requerimiento?.id,
-          estado: "Pendiente", // Modifica este valor según la lógica de tu aplicación
-          nota: "Nota de ejemplo", // Modifica este valor según la lógica de tu aplicación
-          items: listaDeRequerimientos,
-        }
-      );
-
-      if (response.status === 200) {
-        Swal.fire({
-          title: "Guardado exitoso",
-          icon: "success",
-        }).then(() => {
-          history.back();
-        });
-      } else {
-        Swal.fire({
-          title: "Error al guardar",
-          icon: "error",
-        });
+  const modificarEstado = (estado: string) => {
+    setRequerimiento(prevRequerimiento => {
+      if (prevRequerimiento) {
+        return { ...prevRequerimiento, estado };
       }
-    } catch (error) {
-      console.error("Error al guardar el requerimiento:", error);
-      Swal.fire({
-        title: "Error al guardar",
-        icon: "error",
-      });
-    }
+      return prevRequerimiento;
+    });
   };
 
-  const handleAgregarRequerimiento = () => {
-    setListaDeRequerimientos([...listaDeRequerimientos, {
-      id: Math.random(),
-      nombreInsumo: "Insumo",
-      cantidad: 0,
-      precio: 0
-    }])
+  const modificarNota = (nota: string) => {
+    setRequerimiento(prevRequerimiento => {
+      if (prevRequerimiento) {
+        return { ...prevRequerimiento, nota };
+      }
+      return prevRequerimiento;
+    }
+    );
   }
+
+
+  const handleAgregarRequerimiento = (e: any) => {
+    console.log(e.target.insumo.value)
+    const insumoSeleccionado = listaDeInsumos.find((insumo: any) => insumo.id === e.target.insumo.value)
+
+    if (insumoSeleccionado) { // Verificar si se encontró un insumo
+      const newItem = {
+        id: insumoSeleccionado.id,
+        nombreInsumo: insumoSeleccionado.nombre,
+        cantidad: 1,
+        precio: insumoSeleccionado.precio
+      }
+      setListaDeRequerimientos(prevLista => [...prevLista, newItem])
+    } else {
+      console.error("No se encontró un insumo con el nombre proporcionado.");
+    }
+
+    e.target.insumo.value = ""
+  }
+
 
   const modificarTotal = () => {
     const total = listaDeRequerimientos.reduce((acc: number, item: Item) => {
@@ -111,6 +108,73 @@ function EditarRequerimiento() {
     //obtener los insumos del archivo json
     setListaDeInsumos(insumos)
   }
+
+  const agregarRequerimientos = () => {
+    setRequerimiento(prevRequerimiento => {
+      if (prevRequerimiento) {
+        return { ...prevRequerimiento, items: listaDeRequerimientos };
+      }
+      return prevRequerimiento;
+    }
+    );
+  }
+
+  const modificarHistorial = () => {
+    const fecha = new Date();
+    const fechaYHora = fecha.toLocaleString();
+    const historia = {
+      fecha: fechaYHora,
+      evento: "Editado por el usuario"
+    }
+    setRequerimiento(prevRequerimiento => {
+      if (prevRequerimiento) {
+        return { ...prevRequerimiento, historia: [...prevRequerimiento.historia, historia] };
+      }
+      return prevRequerimiento;
+    }
+    );
+  }
+
+  const handleGuardar = async () => {
+    agregarRequerimientos()
+    modificarHistorial()
+    console.log(requerimiento)
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_URL_API_COMPRAS}Requerimiento/nuevoRequerimiento/`, requerimiento);
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Guardado exitoso",
+          icon: "success",
+        }).then(() => {
+          history.back();
+        });
+      } else {
+        Swal.fire({
+          title: "Error al guardar",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar el requerimiento:", error);
+      Swal.fire({
+        title: "Error al guardar",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleSelectChange = (opcion: any) => {
+    const evento = {
+      target: {
+        insumo: {
+          value: opcion.value
+        }
+      }
+    };
+    handleAgregarRequerimiento(evento);
+  };
 
   return (
     <div className="mb-10">
@@ -141,7 +205,7 @@ function EditarRequerimiento() {
           <div className="w-1/2 p-4 grid grid-cols-12 gap-2">
             <div className="col-span-4" >
               <FormLabel htmlFor="vertical-form-1">Estado</FormLabel>
-              <FormSelect className="w-40" aria-label=".form-select-sm example">
+              <FormSelect className="w-40" aria-label=".form-select-sm example" onChange={(e) => modificarEstado(e.target.value)}>
                 <option>Pendiente</option>
                 <option>Aprobado</option>
                 <option>Rechazado</option>
@@ -149,24 +213,34 @@ function EditarRequerimiento() {
             </div>
             <div className="col-span-4">
               <FormLabel htmlFor="vertical-form-1">Nota</FormLabel>
-              <FormTextarea className="w-80" aria-label="default input inline 1" />
+              <FormTextarea
+                className="w-80"
+                aria-label="default input inline 1"
+                value={requerimiento?.nota}
+                onChange={(e) => { modificarNota(e.target.value) }}
+              />
             </div>
           </div>
 
           <div className="w-1/2 p-2">
             <div className="flex">
-              <h1 className="mr-auto ml-5 mb-3 text-lg font-medium">Detalles del Requerimiento</h1>
-              <Button variant="pending" className="mr-1" onClick={() => handleAgregarRequerimiento()}>
-                <Lucide icon="Plus" className="w-4 h-4" />
-              </Button>
+              <h1 className="mr-auto mb-3 text-lg font-medium">Detalles</h1>
+              <form className="flex" onSubmit={handleAgregarRequerimiento}>
+                <Select
+                  className="w-80 mr-2"
+                  options={opcionesInsumos}
+                  onChange={handleSelectChange}
+                  placeholder="Buscar insumo..."
+                />
+              </form>
             </div>
 
             <div className="flex">
-              <div className="w-1/6 p-1 text-center">
-                Insumo
-              </div>
               <div className="w-1/6 p-1 ml-5 text-center">
                 Cantidad
+              </div>
+              <div className="w-1/6 p-1 text-center">
+                Insumo
               </div>
               <div className="w-1/6 p-1 ml-5 text-center">
                 Precio
@@ -178,6 +252,14 @@ function EditarRequerimiento() {
 
             {listaDeRequerimientos.map((item: any, index: number) => (
               <div className="flex" key={index}>
+                <div className="w-1/5 p-1">
+                  <FormInput type="text"
+                    className="w-full"
+                    aria-label=".form-control-sm example"
+                    value={item?.cantidad}
+                    onChange={(e) => handleModificarItem(index, "cantidad", e.target.value)}
+                  />
+                </div>
                 <div className="w-1/5 p-1">
                   <FormSelect
                     className="w-full"
@@ -192,14 +274,6 @@ function EditarRequerimiento() {
                     ))}
                   </FormSelect>
 
-                </div>
-                <div className="w-1/5 p-1">
-                  <FormInput type="text"
-                    className="w-full"
-                    aria-label=".form-control-sm example"
-                    value={item?.cantidad}
-                    onChange={(e) => handleModificarItem(index, "cantidad", e.target.value)}
-                  />
                 </div>
                 <div className="w-1/5 p-1">
                   <FormInput
@@ -251,7 +325,7 @@ function EditarRequerimiento() {
           Guardar
         </Button>
       </div>
-    </div>
+    </div >
 
   )
 }

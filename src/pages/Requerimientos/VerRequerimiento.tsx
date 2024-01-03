@@ -11,9 +11,7 @@ function VerRequerimiento() {
 
 
   useEffect(() => {
-    console.log("ID", id)
     if (requerimientos) {
-      console.log("REQUERIMIENTOS", requerimientos)
       const requerimiento = requerimientos.find((requerimiento: Requerimiento) => requerimiento.id === parseInt(id as string))
       setRequerimiento(requerimiento)
     }

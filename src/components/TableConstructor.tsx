@@ -35,8 +35,8 @@ const TableConstructor = ({ data, handleClick }: TableProps) => {
           <Table.Td>
             Estado
           </Table.Td>
-          <Table.Td>
-            Acción
+          <Table.Td className="text-right">
+            Acciones
           </Table.Td>
         </Table.Tr>
       </Table.Thead>
@@ -56,7 +56,7 @@ const TableConstructor = ({ data, handleClick }: TableProps) => {
               <Table.Td>
                 {row.estado}
               </Table.Td>
-              <Table.Td className="first:rounded-l-md last:rounded-r-md border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+              <Table.Td className="text-right">
                 <Button
                   variant="soft-primary"
                   className="mb-2 mr-1"

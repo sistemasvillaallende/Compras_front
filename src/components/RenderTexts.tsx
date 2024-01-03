@@ -10,7 +10,6 @@ const RenderTexts = ({ data, title, bgSlate }: any) => {
 
 
   useEffect(() => {
-    console.log(data)
     if (data) {
       const total = data?.items?.reduce((acc: number, item: any) => {
         return acc + item.precio * item.cantidad
