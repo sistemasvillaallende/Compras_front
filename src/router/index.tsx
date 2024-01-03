@@ -7,6 +7,9 @@ import NotFound from "../pages/Errors/NotFound "
 import Requerimientos from "../pages/Requerimientos/Requerimientos"
 import VerRequerimiento from "../pages/Requerimientos/VerRequerimiento"
 import EditarRequerimiento from "../pages/Requerimientos/EditarRequerimiento"
+import NuevoRequerimiento from "../pages/Requerimientos/NuevoRequerimiento"
+//Insumos
+import Insumos from "../pages/Insumos/Insumos"
 //layouts
 import TopMenu from "../layouts/TopMenu"
 //Context
@@ -30,6 +33,8 @@ const Router = () => {
               <Route path="/" element={<Requerimientos />} />
               <Route path="/ver/:id" element={<VerRequerimiento />} />
               <Route path="/editar/:id" element={<EditarRequerimiento />} />
+              <Route path="/nuevo" element={<NuevoRequerimiento />} />
+              <Route path="/insumos/" element={<Insumos />} />
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/*" element={<NotFound />} />

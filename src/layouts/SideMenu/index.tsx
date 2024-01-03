@@ -26,6 +26,11 @@ function Main() {
       title: "Inicio",
     },
     {
+      icon: "FolderPlus",
+      pathname: `/nuevo/`,
+      title: "Nuevo",
+    },
+    {
       icon: "Eye",
       pathname: `/ver/${id ?? ""}`,
       title: "Ver",

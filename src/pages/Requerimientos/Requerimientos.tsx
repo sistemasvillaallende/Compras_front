@@ -45,7 +45,6 @@ const Requerimientos = () => {
     if (palabra === "" && parametro === "" && requerimientos) {
       setRequerimientosFiltrados(requerimientos);
     }
-    console.log(palabra, parametro)
   }, [palabra, parametro]);
 
   return (
