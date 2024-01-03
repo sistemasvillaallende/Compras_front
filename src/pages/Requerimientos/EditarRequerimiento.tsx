@@ -49,7 +49,7 @@ function EditarRequerimiento() {
   const handleGuardar = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_URL_API}/Requerimiento/nuevoRequerimiento/`,
+        `${import.meta.env.VITE_URL_API_COMPRAS}Requerimiento/nuevoRequerimiento/`,
         {
           id: requerimiento?.id,
           estado: "Pendiente", // Modifica este valor según la lógica de tu aplicación
